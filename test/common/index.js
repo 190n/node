@@ -163,9 +163,10 @@ const isDumbTerminal = process.env.TERM === 'dumb';
 net.setDefaultAutoSelectFamilyAttemptTimeout(platformTimeout(net.getDefaultAutoSelectFamilyAttemptTimeout() * 10));
 const defaultAutoSelectFamilyAttemptTimeout = net.getDefaultAutoSelectFamilyAttemptTimeout();
 
-const buildType = process.config.target_defaults ?
-  process.config.target_defaults.default_configuration :
-  'Release';
+const buildType = process.config.target_defaults?.default_configuration ??
+  'Debug';
+
+global.gc = () => Bun.gc(true);
 
 // If env var is set then enable async_hook hooks for all tests.
 if (process.env.NODE_TEST_WITH_ASYNC_HOOKS) {
@@ -304,6 +305,49 @@ let knownGlobals = [
   setInterval,
   setTimeout,
   queueMicrotask,
+  addEventListener,
+  alert,
+  confirm,
+  dispatchEvent,
+  postMessage,
+  prompt,
+  removeEventListener,
+  reportError,
+  Bun,
+  File,
+  process,
+  Blob,
+  Buffer,
+  BuildError,
+  BuildMessage,
+  HTMLRewriter,
+  Request,
+  ResolveError,
+  ResolveMessage,
+  Response,
+  TextDecoder,
+  AbortSignal,
+  BroadcastChannel,
+  CloseEvent,
+  DOMException,
+  ErrorEvent,
+  Event,
+  EventTarget,
+  FormData,
+  Headers,
+  MessageChannel,
+  MessageEvent,
+  MessagePort,
+  PerformanceEntry,
+  PerformanceObserver,
+  PerformanceObserverEntryList,
+  TextEncoder,
+  URL,
+  URLSearchParams,
+  WebSocket,
+  Worker,
+  onmessage,
+  onerror,
 ];
 
 if (global.gc) {
@@ -385,7 +429,9 @@ if (global.Storage) {
 }
 
 function allowGlobals(...allowlist) {
-  knownGlobals = knownGlobals.concat(allowlist);
+  for (const key of allowlist) {
+    knownGlobals.push(global[key]);
+  }
 }
 
 if (process.env.NODE_TEST_KNOWN_GLOBALS !== '0') {

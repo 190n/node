@@ -5,12 +5,9 @@ const assert = require('assert');
 // Testing api calls for objects
 const test_object = require(`./build/${common.buildType}/test_object`);
 
-
 const object = {
   hello: 'world',
-  array: [
-    1, 94, 'str', 12.321, { test: 'obj in arr' },
-  ],
+  array: [1, 94, 'str', 12.321, { test: 'obj in arr' }],
   newObject: {
     test: 'obj in obj',
   },
@@ -18,10 +15,16 @@ const object = {
 
 assert.strictEqual(test_object.Get(object, 'hello'), 'world');
 assert.strictEqual(test_object.GetNamed(object, 'hello'), 'world');
-assert.deepStrictEqual(test_object.Get(object, 'array'),
-                       [1, 94, 'str', 12.321, { test: 'obj in arr' }]);
-assert.deepStrictEqual(test_object.Get(object, 'newObject'),
-                       { test: 'obj in obj' });
+assert.deepStrictEqual(test_object.Get(object, 'array'), [
+  1,
+  94,
+  'str',
+  12.321,
+  { test: 'obj in arr' },
+]);
+assert.deepStrictEqual(test_object.Get(object, 'newObject'), {
+  test: 'obj in obj',
+});
 
 assert(test_object.Has(object, 'hello'));
 assert(test_object.HasNamed(object, 'hello'));
@@ -48,13 +51,15 @@ assert.strictEqual(newObject.test_string, 'test string');
   assert.strictEqual(test_object.Get(obj, 'foo'), 42);
   assert.strictEqual(test_object.Get(obj, 'bar'), 43);
   assert.strictEqual(test_object.Get(obj, 'baz'), 45);
-  assert.strictEqual(test_object.Get(obj, 'toString'),
-                     Object.prototype.toString);
+  assert.strictEqual(
+    test_object.Get(obj, 'toString'),
+    Object.prototype.toString
+  );
 }
 
 {
   // Verify that napi_has_own_property() fails if property is not a name.
-  [true, false, null, undefined, {}, [], 0, 1, () => { }].forEach((value) => {
+  [true, false, null, undefined, {}, [], 0, 1, () => {}].forEach((value) => {
     assert.throws(() => {
       test_object.HasOwn({}, value);
     }, /^Error: A string or symbol was expected$/);
@@ -98,8 +103,12 @@ assert.strictEqual(newObject.test_string, 'test string');
   assert.deepStrictEqual(test_object.Inflate(cube), { x: 12, y: 12, z: 12 });
   assert.deepStrictEqual(test_object.Inflate(cube), { x: 13, y: 13, z: 13 });
   cube.t = 13;
-  assert.deepStrictEqual(
-    test_object.Inflate(cube), { x: 14, y: 14, z: 14, t: 14 });
+  assert.deepStrictEqual(test_object.Inflate(cube), {
+    x: 14,
+    y: 14,
+    z: 14,
+    t: 14,
+  });
 
   const sym1 = Symbol('1');
   const sym2 = Symbol('2');
@@ -258,9 +267,11 @@ assert.strictEqual(newObject.test_string, 'test string');
   // i.e.: includes prototypes, only enumerable properties, skips symbols,
   // and includes indices and converts them to strings.
 
-  const object = { __proto__: {
-    inherited: 1,
-  } };
+  const object = {
+    __proto__: {
+      inherited: 1,
+    },
+  };
 
   const fooSymbol = Symbol('foo');
 
@@ -286,43 +297,47 @@ assert.strictEqual(newObject.test_string, 'test string');
   });
   object[5] = 5;
 
-  assert.deepStrictEqual(test_object.GetPropertyNames(object),
-                         ['5',
-                          'normal',
-                          'writable',
-                          'configurable',
-                          'inherited']);
+  assert.deepStrictEqual(test_object.GetPropertyNames(object), [
+    '5',
+    'normal',
+    'writable',
+    'configurable',
+    'inherited',
+  ]);
 
-  assert.deepStrictEqual(test_object.GetSymbolNames(object),
-                         [fooSymbol]);
+  assert.deepStrictEqual(test_object.GetSymbolNames(object), [fooSymbol]);
 
-  assert.deepStrictEqual(test_object.GetEnumerableWritableNames(object),
-                         ['5',
-                          'normal',
-                          'writable',
-                          fooSymbol,
-                          'inherited']);
+  assert.deepStrictEqual(test_object.GetEnumerableWritableNames(object), [
+    '5',
+    'normal',
+    'writable',
+    fooSymbol,
+    'inherited',
+  ]);
 
-  assert.deepStrictEqual(test_object.GetOwnWritableNames(object),
-                         ['5',
-                          'normal',
-                          'unenumerable',
-                          'writable',
-                          fooSymbol]);
+  assert.deepStrictEqual(test_object.GetOwnWritableNames(object), [
+    '5',
+    'normal',
+    'unenumerable',
+    'writable',
+    fooSymbol,
+  ]);
 
-  assert.deepStrictEqual(test_object.GetEnumerableConfigurableNames(object),
-                         ['5',
-                          'normal',
-                          'configurable',
-                          fooSymbol,
-                          'inherited']);
+  assert.deepStrictEqual(test_object.GetEnumerableConfigurableNames(object), [
+    '5',
+    'normal',
+    'configurable',
+    fooSymbol,
+    'inherited',
+  ]);
 
-  assert.deepStrictEqual(test_object.GetOwnConfigurableNames(object),
-                         ['5',
-                          'normal',
-                          'unenumerable',
-                          'configurable',
-                          fooSymbol]);
+  assert.deepStrictEqual(test_object.GetOwnConfigurableNames(object), [
+    '5',
+    'normal',
+    'unenumerable',
+    'configurable',
+    fooSymbol,
+  ]);
 }
 
 // Verify that passing NULL to napi_set_property() results in the correct
@@ -361,11 +376,11 @@ assert.deepStrictEqual(test_object.TestGetProperty(), {
 
   assert.throws(() => {
     obj.w = 'd';
-  }, /Cannot add property w, object is not extensible/);
+  }, /object (that )?is not extensible/);
 
   assert.throws(() => {
     delete obj.x;
-  }, /Cannot delete property 'x' of #<Object>/);
+  }, /Unable to delete property|Cannot delete property 'x' of #<Object>/);
 
   // Sealed objects allow updating existing properties,
   // so this should not throw.
@@ -381,13 +396,13 @@ assert.deepStrictEqual(test_object.TestGetProperty(), {
 
   assert.throws(() => {
     obj.x = 10;
-  }, /Cannot assign to read only property 'x' of object '#<Object>/);
+  }, /Attempted to assign to readonly property|Cannot assign to read only property 'x' of object '#<Object>/);
 
   assert.throws(() => {
     obj.w = 15;
-  }, /Cannot add property w, object is not extensible/);
+  }, /Attempting to define property on object that is not extensible|Cannot add property w, object is not extensible/);
 
   assert.throws(() => {
     delete obj.x;
-  }, /Cannot delete property 'x' of #<Object>/);
+  }, /Unable to delete property|Cannot delete property 'x' of #<Object>/);
 }

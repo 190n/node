@@ -5,10 +5,10 @@
 #include <node_mutex.h>
 #include <string_bytes.h>
 #include "nbytes.h"
+#include "ncrypto.h"
 #include "quic/defs.h"
 
-namespace node {
-namespace quic {
+namespace node::quic {
 
 // ============================================================================
 // CID
@@ -132,7 +132,7 @@ class RandomCIDFactory : public CID::Factory {
     // a CID of the requested size, we regenerate the pool
     // and reset it to zero.
     if (pos_ + length_hint > kPoolSize) {
-      CHECK(crypto::CSPRNG(pool_, kPoolSize).is_ok());
+      CHECK(ncrypto::CSPRNG(pool_, kPoolSize));
       pos_ = 0;
     }
   }
@@ -149,6 +149,5 @@ const CID::Factory& CID::Factory::random() {
   return instance;
 }
 
-}  // namespace quic
-}  // namespace node
+}  // namespace node::quic
 #endif  // HAVE_OPENSSL && NODE_OPENSSL_HAS_QUIC

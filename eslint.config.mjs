@@ -54,7 +54,6 @@ export default [
       'test/message/esm_display_syntax_error.mjs',
       'tools/github_reporter/**',
       'tools/icu/**',
-      'tools/lint-md/lint-md.mjs',
     ],
   },
   // #endregion
@@ -144,6 +143,7 @@ export default [
           ignorePattern: '.*',
         },
       }],
+      'logical-assignment-operators': ['error', 'always', { enforceForIfStatements: true }],
       'default-case-last': 'error',
       'dot-notation': 'error',
       'eqeqeq': ['error', 'smart'],
@@ -313,6 +313,7 @@ export default [
       'node-core/no-unescaped-regexp-dot': 'error',
       'node-core/no-duplicate-requires': 'error',
       'node-core/prefer-proto': 'error',
+      'node-core/prefer-optional-chaining': 'error',
     },
   },
   // #endregion
@@ -346,31 +347,31 @@ export default [
       'error',
       {
         name: '__filename',
-        message: 'Use import.meta.url instead',
+        message: 'Use import.meta.url instead.',
       },
       {
         name: '__dirname',
-        message: 'Not available in ESM',
+        message: 'Not available in ESM.',
       },
       {
         name: 'exports',
-        message: 'Not available in ESM',
+        message: 'Not available in ESM.',
       },
       {
         name: 'module',
-        message: 'Not available in ESM',
+        message: 'Not available in ESM.',
       },
       {
         name: 'require',
-        message: 'Use import instead',
+        message: 'Use import instead.',
       },
       {
         name: 'Buffer',
-        message: 'Import Buffer instead of using the global',
+        message: "Import 'Buffer' instead of using the global.",
       },
       {
         name: 'process',
-        message: 'Import process instead of using the global',
+        message: "Import 'process' instead of using the global.",
       },
     ] },
   },

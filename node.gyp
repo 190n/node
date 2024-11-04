@@ -14,6 +14,7 @@
     'force_dynamic_crt%': 0,
     'ossfuzz' : 'false',
     'node_module_version%': '',
+    'node_use_amaro%': 'true',
     'node_shared_brotli%': 'false',
     'node_shared_zlib%': 'false',
     'node_shared_http_parser%': 'false',
@@ -67,6 +68,7 @@
       'src/api/exceptions.cc',
       'src/api/hooks.cc',
       'src/api/utils.cc',
+      'src/async_context_frame.cc',
       'src/async_wrap.cc',
       'src/base_object.cc',
       'src/cares_wrap.cc',
@@ -105,6 +107,7 @@
       'src/node_constants.cc',
       'src/node_contextify.cc',
       'src/node_credentials.cc',
+      'src/node_debug.cc',
       'src/node_dir.cc',
       'src/node_dotenv.cc',
       'src/node_env_var.cc',
@@ -184,6 +187,7 @@
       'src/aliased_buffer-inl.h',
       'src/aliased_struct.h',
       'src/aliased_struct-inl.h',
+      'src/async_context_frame.h',
       'src/async_wrap.h',
       'src/async_wrap-inl.h',
       'src/base_object.h',
@@ -198,6 +202,7 @@
       'src/compile_cache.h',
       'src/connect_wrap.h',
       'src/connection_wrap.h',
+      'src/cppgc_helpers.h',
       'src/dataqueue/queue.h',
       'src/debug_utils.h',
       'src/debug_utils-inl.h',
@@ -226,6 +231,7 @@
       'src/node_constants.h',
       'src/node_context_data.h',
       'src/node_contextify.h',
+      'src/node_debug.h',
       'src/node_dir.h',
       'src/node_dotenv.h',
       'src/node_errors.h',
@@ -480,6 +486,9 @@
     },
 
     'conditions': [
+      ['clang==0 and OS!="win"', {
+        'cflags': [ '-Wno-restrict', ],
+      }],
       # Pointer authentication for ARM64.
       ['target_arch=="arm64"', {
           'target_conditions': [
@@ -840,7 +849,6 @@
       'dependencies': [
         'deps/googletest/googletest.gyp:gtest_prod',
         'deps/histogram/histogram.gyp:histogram',
-        'deps/sqlite/sqlite.gyp:sqlite',
         'deps/simdjson/simdjson.gyp:simdjson',
         'deps/simdutf/simdutf.gyp:simdutf',
         'deps/ada/ada.gyp:ada',
@@ -940,6 +948,9 @@
             '<@(node_crypto_sources)',
             '<@(node_quic_sources)',
           ],
+          'dependencies': [
+            'deps/ncrypto/ncrypto.gyp:ncrypto',
+          ],
         }],
         [ 'OS in "linux freebsd mac solaris" and '
           'target_arch=="x64" and '
@@ -1026,7 +1037,6 @@
       'dependencies': [
         '<(node_lib_target_name)',
         'deps/histogram/histogram.gyp:histogram',
-        'deps/sqlite/sqlite.gyp:sqlite',
       ],
 
       'includes': [
@@ -1038,7 +1048,6 @@
         'deps/v8/include',
         'deps/cares/include',
         'deps/uv/include',
-        'deps/sqlite',
         'test/cctest',
       ],
 
@@ -1071,7 +1080,6 @@
       'dependencies': [
         '<(node_lib_target_name)',
         'deps/histogram/histogram.gyp:histogram',
-        'deps/sqlite/sqlite.gyp:sqlite',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
       ],
       'includes': [
@@ -1082,7 +1090,6 @@
         'tools/msvs/genfiles',
         'deps/v8/include',
         'deps/cares/include',
-        'deps/sqlite',
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
@@ -1117,7 +1124,6 @@
         '<(node_lib_target_name)',
         'deps/googletest/googletest.gyp:gtest_prod',
         'deps/histogram/histogram.gyp:histogram',
-        'deps/sqlite/sqlite.gyp:sqlite',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ada/ada.gyp:ada',
         'deps/nbytes/nbytes.gyp:nbytes',
@@ -1130,7 +1136,6 @@
         'tools/msvs/genfiles',
         'deps/v8/include',
         'deps/cares/include',
-        'deps/sqlite',
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
@@ -1167,7 +1172,6 @@
         'deps/googletest/googletest.gyp:gtest',
         'deps/googletest/googletest.gyp:gtest_main',
         'deps/histogram/histogram.gyp:histogram',
-        'deps/sqlite/sqlite.gyp:sqlite',
         'deps/simdjson/simdjson.gyp:simdjson',
         'deps/simdutf/simdutf.gyp:simdutf',
         'deps/ada/ada.gyp:ada',
@@ -1184,7 +1188,6 @@
         'deps/v8/include',
         'deps/cares/include',
         'deps/uv/include',
-        'deps/sqlite',
         'test/cctest',
       ],
 
@@ -1200,6 +1203,9 @@
         [ 'node_use_openssl=="true"', {
           'defines': [
             'HAVE_OPENSSL=1',
+          ],
+          'dependencies': [
+            'deps/ncrypto/ncrypto.gyp:ncrypto',
           ],
           'sources': [ '<@(node_cctest_openssl_sources)' ],
         }],
@@ -1246,7 +1252,6 @@
       'dependencies': [
         '<(node_lib_target_name)',
         'deps/histogram/histogram.gyp:histogram',
-        'deps/sqlite/sqlite.gyp:sqlite',
         'deps/ada/ada.gyp:ada',
         'deps/nbytes/nbytes.gyp:nbytes',
       ],
@@ -1262,7 +1267,6 @@
         'deps/v8/include',
         'deps/cares/include',
         'deps/uv/include',
-        'deps/sqlite',
         'test/embedding',
       ],
 
@@ -1362,7 +1366,6 @@
       'dependencies': [
         '<(node_lib_target_name)',
         'deps/histogram/histogram.gyp:histogram',
-        'deps/sqlite/sqlite.gyp:sqlite',
         'deps/ada/ada.gyp:ada',
         'deps/nbytes/nbytes.gyp:nbytes',
         'deps/simdjson/simdjson.gyp:simdjson',
@@ -1379,7 +1382,6 @@
         'deps/v8/include',
         'deps/cares/include',
         'deps/uv/include',
-        'deps/sqlite',
       ],
 
       'defines': [ 'NODE_WANT_INTERNALS=1' ],
@@ -1389,11 +1391,20 @@
         'tools/snapshot/node_mksnapshot.cc',
       ],
 
+      'msvs_settings': {
+        'VCLinkerTool': {
+          'EnableCOMDATFolding': '1', # /OPT:NOICF
+        },
+      },
+
       'conditions': [
         ['node_write_snapshot_as_array_literals=="true"', {
           'defines': [ 'NODE_MKSNAPSHOT_USE_ARRAY_LITERALS=1' ],
         }],
         [ 'node_use_openssl=="true"', {
+          'dependencies': [
+            'deps/ncrypto/ncrypto.gyp:ncrypto',
+          ],
           'defines': [
             'HAVE_OPENSSL=1',
           ],

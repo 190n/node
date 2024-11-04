@@ -8,9 +8,9 @@
 #include <util-inl.h>
 #include <algorithm>
 #include "nbytes.h"
+#include "ncrypto.h"
 
-namespace node {
-namespace quic {
+namespace node::quic {
 
 // ============================================================================
 // TokenSecret
@@ -22,7 +22,7 @@ TokenSecret::TokenSecret() : buf_() {
   // If someone manages to get visibility into that cache then they would know
   // the secrets for a larger number of tokens, which could be bad. For now,
   // generating on each call is safer, even if less performant.
-  CHECK(crypto::CSPRNG(buf_, QUIC_TOKENSECRET_LEN).is_ok());
+  CHECK(ncrypto::CSPRNG(buf_, QUIC_TOKENSECRET_LEN));
 }
 
 TokenSecret::TokenSecret(const uint8_t* secret) : buf_() {
@@ -299,7 +299,6 @@ RegularToken::operator const char*() const {
   return reinterpret_cast<const char*>(ptr_.base);
 }
 
-}  // namespace quic
-}  // namespace node
+}  // namespace node::quic
 
 #endif  // HAVE_OPENSSL && NODE_OPENSSL_HAS_QUIC

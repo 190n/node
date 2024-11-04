@@ -872,7 +872,7 @@ channels.tracePromise(async () => {
 });
 ```
 
-#### `tracingChannel.traceCallback(fn, position, context, thisArg, ...args)`
+#### `tracingChannel.traceCallback(fn[, position[, context[, thisArg[, ...args]]]])`
 
 <!-- YAML
 added:
@@ -927,7 +927,7 @@ const channels = diagnostics_channel.tracingChannel('my-channel');
 channels.traceCallback((arg1, callback) => {
   // Do something
   callback(null, 'result');
-}, {
+}, 1, {
   some: 'thing',
 }, thisArg, arg1, callback);
 ```
@@ -975,6 +975,43 @@ channels.start.bindStore(myStore, (data) => {
 channels.asyncStart.bindStore(myStore, (data) => {
   return data.span;
 });
+```
+
+#### `tracingChannel.hasSubscribers`
+
+<!-- YAML
+added:
+ - v22.0.0
+ - v20.13.0
+-->
+
+> Stability: 1 - Experimental
+
+* Returns: {boolean} `true` if any of the individual channels has a subscriber,
+  `false` if not.
+
+This is a helper method available on a [`TracingChannel`][] instance to check if
+any of the [TracingChannel Channels][] have subscribers. A `true` is returned if
+any of them have at least one subscriber, a `false` is returned otherwise.
+
+```mjs
+import diagnostics_channel from 'node:diagnostics_channel';
+
+const channels = diagnostics_channel.tracingChannel('my-channel');
+
+if (channels.hasSubscribers) {
+  // Do something
+}
+```
+
+```cjs
+const diagnostics_channel = require('node:diagnostics_channel');
+
+const channels = diagnostics_channel.tracingChannel('my-channel');
+
+if (channels.hasSubscribers) {
+  // Do something
+}
 ```
 
 ### TracingChannel Channels
@@ -1086,11 +1123,25 @@ independently.
 
 #### HTTP
 
+`http.client.request.created`
+
+* `request` {http.ClientRequest}
+
+Emitted when client creates a request object.
+Unlike `http.client.request.start`, this event is emitted before the request has been sent.
+
 `http.client.request.start`
 
 * `request` {http.ClientRequest}
 
 Emitted when client starts a request.
+
+`http.client.request.error`
+
+* `request` {http.ClientRequest}
+* `error` {Error}
+
+Emitted when an error occurs during a client request.
 
 `http.client.response.finish`
 
@@ -1107,6 +1158,14 @@ Emitted when client receives a response.
 * `server` {http.Server}
 
 Emitted when server receives a request.
+
+`http.server.response.created`
+
+* `request` {http.IncomingMessage}
+* `response` {http.ServerResponse}
+
+Emitted when server creates a response.
+The event is emitted before the response is sent.
 
 `http.server.response.finish`
 

@@ -1,48 +1,66 @@
-## c-ares version 1.32.1 - July 7 2024
+## c-ares version 1.34.2 - October 15 2024
 
-This is a bugfix release.
+This release contains a fix for downstream packages detecting the c-ares
+version based on the contents of the header file rather than the
+distributed pkgconf or cmake files.
 
-Bugfixes:
-* Channel lock needs to be recursive to ensure calls into c-ares functions can
-  be made from callbacks otherwise deadlocks will occur.  This regression was
-  introduced in 1.32.0.
+## c-ares version 1.34.1 - October 9 2024
+
+This release fixes a packaging issue.
 
 
-## c-ares version 1.32.0 - July 4 2024
+## c-ares version 1.34.0 - October 9 2024
 
 This is a feature and bugfix release.
 
 Features:
-
-* Add support for DNS 0x20 to help prevent cache poisoning attacks, enabled
-  by specifying `ARES_FLAG_DNS0x20`.  Disabled by default. [PR #800](https://github.com/c-ares/c-ares/pull/800)
-* Rework query timeout logic to automatically adjust timeouts based on network
-  conditions.  The timeout specified now is only used as a hint until there
-  is enough history to calculate a more valid timeout. [PR #794](https://github.com/c-ares/c-ares/pull/794)
+* adig: read arguments from adigrc.
+  [PR #856](https://github.com/c-ares/c-ares/pull/856)
+* Add new pending write callback optimization via `ares_set_pending_write_cb`.
+  [PR #857](https://github.com/c-ares/c-ares/pull/857)
+* New function `ares_process_fds()`.
+  [PR #875](https://github.com/c-ares/c-ares/pull/875)
+* Failed servers should be probed rather than redirecting queries which could
+  cause unexpected latency.
+  [PR #877](https://github.com/c-ares/c-ares/pull/877)
+* adig: rework command line arguments to mimic dig from bind.
+  [PR #890](https://github.com/c-ares/c-ares/pull/890)
+* Add new method for overriding network functions
+  `ares_set_socket_function_ex()` to properly support all new functionality.
+  [PR #894](https://github.com/c-ares/c-ares/pull/894)
+* Fix regression with custom socket callbacks due to DNS cookie support.
+  [PR #895](https://github.com/c-ares/c-ares/pull/895)
+* ares_socket: set IP_BIND_ADDRESS_NO_PORT on ares_set_local_ip* tcp sockets
+  [PR #887](https://github.com/c-ares/c-ares/pull/887)
+* URI parser/writer for ares_set_servers_csv()/ares_get_servers_csv().
+  [PR #882](https://github.com/c-ares/c-ares/pull/882)
 
 Changes:
+* Connection handling modularization.
+  [PR #857](https://github.com/c-ares/c-ares/pull/857),
+  [PR #876](https://github.com/c-ares/c-ares/pull/876)
+* Expose library/utility functions to tools.
+  [PR #860](https://github.com/c-ares/c-ares/pull/860)
+* Remove `ares__` prefix, just use `ares_` for internal functions.
+  [PR #872](https://github.com/c-ares/c-ares/pull/872)
 
-* DNS RR TXT strings should not be automatically concatenated as there are use
-  cases outside of RFC 7208.  In order to maintain ABI compliance, the ability
-  to retrieve TXT strings concatenated is retained as well as a new API to
-  retrieve the individual strings.  This restores behavior from c-ares 1.20.0.
-  [PR #801](https://github.com/c-ares/c-ares/pull/801)
-* Clean up header inclusion logic to make hacking on code easier. [PR #797](https://github.com/c-ares/c-ares/pull/797)
-* GCC/Clang: Enable even more strict warnings to catch more coding flaws. [253bdee](https://github.com/c-ares/c-ares/commit/253bdee)
-* MSVC: Enable `/W4` warning level. [PR #792](https://github.com/c-ares/c-ares/pull/792)
 
 Bugfixes:
+* fix: potential WIN32_LEAN_AND_MEAN redefinition.
+  [PR #869](https://github.com/c-ares/c-ares/pull/869)
+* Fix googletest v1.15 compatibility.
+  [PR #874](https://github.com/c-ares/c-ares/pull/874)
+* Fix pkgconfig thread dependencies.
+  [PR #884](https://github.com/c-ares/c-ares/pull/884)
 
-* Tests: Fix thread race condition in test cases for EventThread. [PR #803](https://github.com/c-ares/c-ares/pull/803)
-* Windows: Fix building with UNICODE. [PR #802](https://github.com/c-ares/c-ares/pull/802)
-* Thread Saftey: `ares_timeout()` was missing lock. [74a64e4](https://github.com/c-ares/c-ares/commit/74a64e4)
-* Fix building with DJGPP (32bit protected mode DOS). [PR #789](https://github.com/c-ares/c-ares/pull/789)
 
 Thanks go to these friendly people for their efforts and contributions for this
 release:
 
 * Brad House (@bradh352)
-* Cheng (@zcbenz)
-
-
+* Cristian Rodríguez (@crrodriguez)
+* Georg (@tacerus)
+* @lifenjoiner
+* Shelley Vohr (@codebytere)
+* 前进，前进，进 (@leleliu008)
 

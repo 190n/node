@@ -165,8 +165,10 @@ const isDumbTerminal = process.env.TERM === 'dumb';
 net.setDefaultAutoSelectFamilyAttemptTimeout(platformTimeout(net.getDefaultAutoSelectFamilyAttemptTimeout() * 10));
 const defaultAutoSelectFamilyAttemptTimeout = net.getDefaultAutoSelectFamilyAttemptTimeout();
 
-const buildType = process.config.target_defaults?.default_configuration ??
-  'Debug';
+// const buildType = process.config.target_defaults?.default_configuration ??
+//   'Debug';
+// Always use Node-API modules built in debug mode so that we get better errors
+const buildType = 'Debug';
 
 global.gc = () => Bun.gc(true);
 

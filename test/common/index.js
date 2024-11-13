@@ -597,8 +597,21 @@ function canCreateSymLink() {
   return true;
 }
 
+// Remove when Bun adds util.getCallSites
+function getCallSite(top) {
+  const originalStackFormatter = Error.prepareStackTrace;
+  Error.prepareStackTrace = (err, stack) =>
+    `${stack[0].getFileName()}:${stack[0].getLineNumber()}`;
+  const err = new Error();
+  Error.captureStackTrace(err, top);
+  // With the V8 Error API, the stack is not formatted until it is accessed
+  err.stack; // eslint-disable-line no-unused-expressions
+  Error.prepareStackTrace = originalStackFormatter;
+  return err.stack;
+}
+
 function mustNotCall(msg) {
-  const callSite = getCallSites()[1];
+  const callSite = getCallSite(mustNotCall);
   return function mustNotCall(...args) {
     const argsInfo = args.length > 0 ?
       `\ncalled with arguments: ${args.map((arg) => inspect(arg)).join(', ')}` : '';

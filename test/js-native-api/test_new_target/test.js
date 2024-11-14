@@ -4,8 +4,6 @@ const common = require('../../common');
 const assert = require('assert');
 const binding = require(`./build/${common.buildType}/test_new_target`);
 
-console.log(this, binding.BaseClass, binding.BaseClass.prototype, binding.BaseClass.__proto__);
-
 class Class extends binding.BaseClass {
   constructor() {
     super();

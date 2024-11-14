@@ -44,36 +44,7 @@ typedef double double_t;
   }
 
 BINDING_FOR_CREATE(Double, double)
-static napi_value CreateInt32(napi_env env, napi_callback_info info) {
-  napi_value return_value, call_result;
-  int32_t value = 42;
-  do {
-    if ((napi_create_object(env, &return_value)) != napi_ok) {
-      do {
-        const napi_extended_error_info* error_info;
-        napi_get_last_error_info(((env)), &error_info);
-        bool is_pending;
-        const char* err_message = error_info->error_message;
-        napi_is_exception_pending(((env)), &is_pending);
-        if (!is_pending) {
-          const char* error_message =
-              err_message != ((void*)0) ? err_message : "empty error message";
-          napi_throw_error(((env)), ((void*)0), error_message);
-        }
-      } while (0);
-      return ((void*)0);
-    }
-  } while (0);
-  add_returned_status(env,
-                      "envIsNull",
-                      return_value,
-                      "Invalid argument",
-                      napi_invalid_arg,
-                      napi_create_int32(((void*)0), value, &call_result));
-  napi_create_int32(env, value, ((void*)0));
-  add_last_status(env, "resultIsNull", return_value);
-  return return_value;
-}
+BINDING_FOR_CREATE(Int32, int32)
 BINDING_FOR_CREATE(Uint32, uint32)
 BINDING_FOR_CREATE(Int64, int64)
 BINDING_FOR_GET_VALUE(Double, double)

@@ -328,26 +328,20 @@ static napi_value TestPropertyKeyUtf8AutoLength(napi_env env,
 }
 
 static napi_value TestPropertyKeyUtf16(napi_env env, napi_callback_info info) {
-  // return TestTwoByteImpl(env,
-  //                        info,
-  //                        napi_get_value_string_utf16,
-  //                        node_api_create_property_key_utf16,
-  //                        actual_length);
-  napi_value undefined;
-  NODE_API_CALL(env, napi_get_undefined(env, &undefined));
-  return undefined;
+  return TestTwoByteImpl(env,
+                         info,
+                         napi_get_value_string_utf16,
+                         node_api_create_property_key_utf16,
+                         actual_length);
 }
 
 static napi_value TestPropertyKeyUtf16AutoLength(napi_env env,
                                                  napi_callback_info info) {
-  // return TestTwoByteImpl(env,
-  //                        info,
-  //                        napi_get_value_string_utf16,
-  //                        node_api_create_property_key_utf16,
-  //                        auto_length);
-  napi_value undefined;
-  NODE_API_CALL(env, napi_get_undefined(env, &undefined));
-  return undefined;
+  return TestTwoByteImpl(env,
+                         info,
+                         napi_get_value_string_utf16,
+                         node_api_create_property_key_utf16,
+                         auto_length);
 }
 
 static napi_value Latin1Length(napi_env env, napi_callback_info info) {
